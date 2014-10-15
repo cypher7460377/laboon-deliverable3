@@ -16,7 +16,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import java.lang.Long;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -64,6 +64,9 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
   }
 
   private static final int  MAX_BOMB_COUNT  = 10;
+  private static long seed;
+  private static int tempseed;
+  private static boolean seeded=false;
   private int          ROWS      = 9, COLUMNS = 9, TOTAL = ROWS * COLUMNS;
   private JPanel        pnlMain      = new JPanel(new GridLayout(ROWS, COLUMNS));
   private JLabel        lblBombCount  = new JLabel(MAX_BOMB_COUNT + "");
@@ -242,6 +245,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
       }
     }
     if (isWin) {
+	seeded=false;
       state = GameState.Finished;
       for (Component c : pnlMain.getComponents()) {
         GameButton b = (GameButton) c;
@@ -291,6 +295,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
     lblBombCount.setText("" + blastCount);
     lblBombCount.updateUI();
     state = GameState.Finished;
+    seeded=false;
     JOptionPane.showMessageDialog(this, "You loose the game :(", "Game Over", JOptionPane.ERROR_MESSAGE, null);
     for (Component c : pnlMain.getComponents()) {
       GameButton b = (GameButton) c;
@@ -300,10 +305,25 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
 
   private boolean isBomb() {
     Random r = new Random();
-    return r.nextInt(ROWS) == 1;
+    if(!seeded)
+    	return r.nextInt(ROWS) == 1;
+    if(tempseed==-1)
+    {
+       tempseed=(int)seed%10;
+       seed=seed/10;
+       return true;
+    }
+    tempseed--;
+    return false;
   }
 
   public static void main(String... args) {
+    if(args.length==1)
+    {
+	seed=Long.parseLong(args[0],10);
+        tempseed=(int)seed%10;
+	seeded=true;
+    }
     JFrame fr = new JFrame("MineSweeper");
     fr.setLayout(new BorderLayout());
     fr.add(new MineSweeper());
