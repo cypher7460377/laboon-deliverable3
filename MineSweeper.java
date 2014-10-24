@@ -16,7 +16,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import java.lang.Long;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -54,16 +54,6 @@ import javax.swing.JPanel;
 */
 
 public class MineSweeper extends JPanel implements AWTEventListener, ActionListener {
-
-	private boolean _test = false;
-	
-	public boolean getTest() {
-		return this._test;
-	}
-	
-	public void setTest(boolean set) {
-		this._test = set;
-	}
 	
   public static enum State {
     Clicked, Marked, Initial, WrongMarked
@@ -72,8 +62,12 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
   public static enum GameState {
     NotStarted, Playing, Finished
   }
-
+  
+  private boolean _test = false;
   private static final int  MAX_BOMB_COUNT  = 10;
+  private static long seed;
+  private static int tempseed;
+  private static boolean seeded=false;
   private int          ROWS      = 9, COLUMNS = 9, TOTAL = ROWS * COLUMNS;
   private JPanel        pnlMain      = new JPanel(new GridLayout(ROWS, COLUMNS));
   private JLabel        lblBombCount  = new JLabel(MAX_BOMB_COUNT + "");
@@ -253,6 +247,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
       }
     }
     if (isWin) {
+	  seeded=false;
       state = GameState.Finished;
       for (Component c : pnlMain.getComponents()) {
         GameButton b = (GameButton) c;
@@ -302,6 +297,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
     lblBombCount.setText("" + blastCount);
     lblBombCount.updateUI();
     state = GameState.Finished;
+    seeded=false;    
     JOptionPane.showMessageDialog(this, "You lose the game :(", "Game Over", JOptionPane.ERROR_MESSAGE, null);
     for (Component c : pnlMain.getComponents()) {
       GameButton b = (GameButton) c;
@@ -318,6 +314,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
 	    Random r = new Random();
 	    return r.nextInt(ROWS) == 1;
 	}
+
   }
 
   public static void main(String... args) {
@@ -332,7 +329,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-  
+	
     JFrame fr = new JFrame("MineSweeper");
     fr.setLayout(new BorderLayout());
     fr.add(new MineSweeper(test));
@@ -497,4 +494,13 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
       restartGame();
     }
   }
+  
+	
+	public boolean getTest() {
+		return this._test;
+	}
+	
+	public void setTest(boolean set) {
+		this._test = set;
+	}
 }
