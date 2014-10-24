@@ -55,6 +55,16 @@ import javax.swing.JPanel;
 
 public class MineSweeper extends JPanel implements AWTEventListener, ActionListener {
 
+	private boolean _test = false;
+	
+	public boolean getTest() {
+		return this._test;
+	}
+	
+	public void setTest(boolean set) {
+		this._test = set;
+	}
+	
   public static enum State {
     Clicked, Marked, Initial, WrongMarked
   }
@@ -90,7 +100,8 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
 
   private GameState  state  = GameState.NotStarted;
 
-  public MineSweeper() {
+  public MineSweeper(boolean test) {
+	setTest(test);
     setLayout(new BorderLayout());
     add(pnlMain, BorderLayout.CENTER);
     createButtons();
@@ -291,7 +302,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
     lblBombCount.setText("" + blastCount);
     lblBombCount.updateUI();
     state = GameState.Finished;
-    JOptionPane.showMessageDialog(this, "You loose the game :(", "Game Over", JOptionPane.ERROR_MESSAGE, null);
+    JOptionPane.showMessageDialog(this, "You lose the game :(", "Game Over", JOptionPane.ERROR_MESSAGE, null);
     for (Component c : pnlMain.getComponents()) {
       GameButton b = (GameButton) c;
       b.setEnabled(false);
@@ -299,14 +310,32 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
   }
 
   private boolean isBomb() {
-    Random r = new Random();
-    return r.nextInt(ROWS) == 1;
+	if (_test) {
+		Random r = new Random(3);
+	    return r.nextInt(ROWS) == 1;		
+		
+	} else {
+	    Random r = new Random();
+	    return r.nextInt(ROWS) == 1;
+	}
   }
 
   public static void main(String... args) {
+	  boolean test = false;
+	try {
+		if (Integer.parseInt(args[0]) != 0) {
+			test = (true);
+		} else {
+			test = (false);
+		}
+	} catch (NumberFormatException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+  
     JFrame fr = new JFrame("MineSweeper");
     fr.setLayout(new BorderLayout());
-    fr.add(new MineSweeper());
+    fr.add(new MineSweeper(test));
     fr.setResizable(false);
     fr.setSize(250, 350);
     fr.setLocationRelativeTo(null);
