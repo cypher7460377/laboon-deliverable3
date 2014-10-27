@@ -54,7 +54,7 @@ import javax.swing.JPanel;
 */
 
 public class MineSweeper extends JPanel implements AWTEventListener, ActionListener {
-	
+
   public static enum State {
     Clicked, Marked, Initial, WrongMarked
   }
@@ -62,8 +62,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
   public static enum GameState {
     NotStarted, Playing, Finished
   }
-  
-  private boolean _test = false;
+
   private static final int  MAX_BOMB_COUNT  = 10;
   private static long seed;
   private static int tempseed;
@@ -94,8 +93,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
 
   private GameState  state  = GameState.NotStarted;
 
-  public MineSweeper(boolean test) {
-	setTest(test);
+  public MineSweeper() {
     setLayout(new BorderLayout());
     add(pnlMain, BorderLayout.CENTER);
     createButtons();
@@ -247,7 +245,7 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
       }
     }
     if (isWin) {
-	  seeded=false;
+	seeded=false;
       state = GameState.Finished;
       for (Component c : pnlMain.getComponents()) {
         GameButton b = (GameButton) c;
@@ -297,8 +295,8 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
     lblBombCount.setText("" + blastCount);
     lblBombCount.updateUI();
     state = GameState.Finished;
-    seeded=false;    
-    JOptionPane.showMessageDialog(this, "You lose the game :(", "Game Over", JOptionPane.ERROR_MESSAGE, null);
+    seeded=false;
+    JOptionPane.showMessageDialog(this, "You loose the game :(", "Game Over", JOptionPane.ERROR_MESSAGE, null);
     for (Component c : pnlMain.getComponents()) {
       GameButton b = (GameButton) c;
       b.setEnabled(false);
@@ -306,33 +304,29 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
   }
 
   private boolean isBomb() {
-	if (_test) {
-		Random r = new Random(3);
-	    return r.nextInt(ROWS) == 1;		
-		
-	} else {
-	    Random r = new Random();
-	    return r.nextInt(ROWS) == 1;
-	}
-
+    Random r = new Random();
+    if(!seeded)
+    	return r.nextInt(ROWS) == 1;
+    if(tempseed==-1)
+    {
+       tempseed=(int)seed%10;
+       seed=seed/10;
+       return true;
+    }
+    tempseed--;
+    return false;
   }
 
   public static void main(String... args) {
-	  boolean test = false;
-	try {
-		if (Integer.parseInt(args[0]) != 0) {
-			test = (true);
-		} else {
-			test = (false);
-		}
-	} catch (NumberFormatException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	
+    if(args.length==1)
+    {
+	seed=Long.parseLong(args[0],10);
+        tempseed=(int)seed%10;
+	seeded=true;
+    }
     JFrame fr = new JFrame("MineSweeper");
     fr.setLayout(new BorderLayout());
-    fr.add(new MineSweeper(test));
+    fr.add(new MineSweeper());
     fr.setResizable(false);
     fr.setSize(250, 350);
     fr.setLocationRelativeTo(null);
@@ -494,13 +488,4 @@ public class MineSweeper extends JPanel implements AWTEventListener, ActionListe
       restartGame();
     }
   }
-  
-	
-	public boolean getTest() {
-		return this._test;
-	}
-	
-	public void setTest(boolean set) {
-		this._test = set;
-	}
 }
